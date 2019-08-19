@@ -5,7 +5,11 @@ library(openxlsx)
 library(gdata)
 library(ggsci)
 library(DT)
-
+library(data.table)
+library(Biostrings)
+library(stringi)
+library(stringr)
+library(rmotifx)
 #library(KSEAapp)
 colpalettes<-unique(c(pal_npg("nrc")(10),pal_aaas("default")(10),pal_nejm("default")(8),pal_lancet("lanonc")(9),
                       pal_jama("default")(7),pal_jco("default")(10),pal_ucscgb("default")(26),pal_d3("category10")(10),
@@ -441,9 +445,6 @@ server<-shinyServer(function(input, output, session){
     dataread
   })
   output$seqrawdata<-renderDataTable({
-    library(data.table)
-    library(Biostrings)
-
     dataread<-seqrawdataout()
     datatable(dataread, options = list(pageLength = 10))
   })
@@ -740,10 +741,6 @@ server<-shinyServer(function(input, output, session){
 
 
   output$seqduiqi<-renderDataTable({
-    library(stringi)
-    library(stringr)
-    library(rmotifx)
-
     datareaddq<-seqduiqievent()#isolate(seqduiqiout())
     datatable(datareaddq, options = list(pageLength = 10))
   })
