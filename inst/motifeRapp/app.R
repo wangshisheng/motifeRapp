@@ -1074,9 +1074,11 @@ server<-shinyServer(function(input, output, session){
   )
   #
   kinasedataout<-reactive({
-    KSData<-read.csv("PSP_NetworKIN_Kinase_Substrate_Dataset_July2016.csv",stringsAsFactors = F)
-    KSData.filtered = KSData[grep("[a-z]", KSData$Source),]
-    KSData.filtered = KSData.filtered[(KSData.filtered$networkin_score >= input$NetworKINcutoff),]
+    load(file = "PSP_NetworKIN_Kinase_Substrate_Dataset_July2016.rdata")
+    #KSData<-read.csv("PSP_NetworKIN_Kinase_Substrate_Dataset_July2016.csv",stringsAsFactors = F)
+    KSData<-Kinase_Substrate_Dataset
+    KSData.filtered <- KSData[grep("[a-z]", KSData$Source),]
+    KSData.filtered <- KSData.filtered[(KSData.filtered$networkin_score >= input$NetworKINcutoff),]
     KSData.filtered$networkin_score[is.infinite(KSData.filtered$networkin_score)]<-300
     motiffujidf<-motiffujiout2()
     #motiffujidf_motifdf<-NULL
