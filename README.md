@@ -4,10 +4,10 @@ The detailed information can be found at [https://github.com/wangshisheng/motife
 The online version is available here: [https://www.omicsolution.org/wukong/motifeR](https://www.omicsolution.org/wukong/motifeR).
 
 ## Preparation
-This tool is developed with R, so if you want to run it locally, you may do some preparatory work:
-**1. Install R.** You can download R from here: [https://www.r-project.org/](https://www.r-project.org/).
-**2. Install RStudio.** (Recommendatory but not necessary). You can download RStudio from here: [https://www.rstudio.com/](https://www.rstudio.com/).
-**3. Check packages.** After installing R and RStudio, you should check whether you have installed these packages (shiny, shinyBS, shinyjs, DT, gdata, knitr, ggplot2, ggsci, openxlsx, data.table, Biostrings, stringi, stringr, ggrepel, igraph, ggraph, graphlayouts, scales). You may run the codes below to check them:
+This tool is developed with R, so if you want to run it locally, you may do some preparatory work:  
+**1. Install R.** You can download R from here: [https://www.r-project.org/](https://www.r-project.org/).  
+**2. Install RStudio.** (Recommendatory but not necessary). You can download RStudio from here: [https://www.rstudio.com/](https://www.rstudio.com/).  
+**3. Check packages.** After installing R and RStudio, you should check whether you have installed these packages (shiny, shinyBS, shinyjs, DT, gdata, knitr, ggplot2, ggsci, openxlsx, data.table, Biostrings, stringi, stringr, ggrepel, igraph, ggraph, graphlayouts, scales). You may run the codes below to check them:  
 
 ```r
 if(!require(pacman)) install.packages("pacman")
