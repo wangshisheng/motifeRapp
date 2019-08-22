@@ -14,6 +14,17 @@ if(!require(pacman)) install.packages("pacman")
 pacman::p_load(devtools,shiny,shinyBS,shinyjs,DT,gdata,knitr,ggplot2,ggsci,openxlsx,data.table,Biostrings,stringi,stringr,ggrepel,igraph,ggraph,graphlayouts,scales)
 ```
 
+4. **Install packages locally.** motifeR needs two more packages ([rmotifx](https://github.com/omarwagih/rmotifx) and [ggseqlogo](https://github.com/omarwagih/ggseqlogo)), however, the functions in the two packages are not enough. I update some functions, and you should download and then install them locally.
+
+rmotifx: download from here: [https://github.com/wangshisheng/motifeR/blob/master/rmotifx_1.0.tar.gz](https://github.com/wangshisheng/motifeR/blob/master/rmotifx_1.0.tar.gz).
+ggseqlogo: download from here: [https://github.com/wangshisheng/motifeR/blob/master/ggseqlogo_0.1.tar.gz](https://github.com/wangshisheng/motifeR/blob/master/ggseqlogo_0.1.tar.gz).
+
+After downloading them, set the path where the packages are:
+```r
+setwd('path') #path is where the two packages are.
+install.packages("rmotifx_1.0.tar.gz", repos = NULL,type="source")
+install.packages("ggseqlogo_0.1.tar.gz", repos = NULL,type="source")
+```
 
 ## Run it locally
 If the preparatory work has been done, you can run this tool locally as below:
