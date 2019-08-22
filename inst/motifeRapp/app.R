@@ -844,6 +844,9 @@ server<-shinyServer(function(input, output, session){
                        min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
     }
     #motseq<<-motseq
+    if(is.null(motseq)){
+      stop("No enrichment results, maybe you need to adjust the 'Minimum number' and/or 'P-value threshold' parameters~~")
+    }
     motseqdf<-motseq$df
     motseqdf$Enrich.seq<-sapply(motseq$motiflist,function(x) paste(x$pos,collapse = ";"))
     matchpro<-sapply(motseq$motiflist,function(x){
@@ -864,10 +867,10 @@ server<-shinyServer(function(input, output, session){
     tabdata4
   })
   regularmotiffujiout<-reactive({
-    datareaddq<-seqduiqiout()
-    datareadbj<-seqbjdataout()
-    fastaseqownoutdf<-fastaseqownout()
-    wuzhong<-strsplit(input$metabopathspeciesselect,"-")[[1]][1]
+    datareaddq<<-seqduiqiout()
+    datareadbj<<-seqbjdataout()
+    fastaseqownoutdf<<-fastaseqownout()
+    wuzhong<<-strsplit(input$metabopathspeciesselect,"-")[[1]][1]
     if(input$onlymultisiteif){
       seqduiqiduositedf<-seqduiqiduositeout()
       datareaddq1<-seqduiqiduositedf$Seqwindows_MultiSites[seqduiqiduositedf$Contain.if=="Yes"]
@@ -896,6 +899,9 @@ server<-shinyServer(function(input, output, session){
                        min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
     }
     #motseq<<-motseq
+    if(is.null(motseq)){
+      stop("No enrichment results, maybe you need to adjust the 'Minimum number' and/or 'P-value threshold' parameters~~")
+    }
     motseqdf<-motseq$df
     motseqdf$Enrich.seq<-sapply(motseq$motiflist,function(x) paste(x$pos,collapse = ";"))
     matchpro<-sapply(motseq$motiflist,function(x){
