@@ -566,9 +566,20 @@ server<-shinyServer(function(input, output, session){
         xx2<-paste(xx6,collapse = ";")
         xx2
       })
+      centeranjisuan<-lapply(datareaddq[[1]],function(x){
+        pepi<-strsplit(gsub(centralres2,"",x),"")[[1]]
+        xx4<-gregexpr(centralres[1],x)[[1]]
+        xx3<-gregexpr(centralres2,x)[[1]]
+        xx5<-unlist(lapply(xx4,function(x) which(x==xx3)))
+        xx1<-1:length(xx3)
+        xx6<-as.numeric(xx3)-xx1
+        xx2<-paste(pepi[xx6[xx5]],collapse = ";")
+        xx2
+      })
       uploaddata1$Pep.main.index<-unlist(EGindex)
       uploaddata1$Pep.all.index<-unlist(EGindex1)
-      colnames(uploaddata1)<-c("Pep.upload","Stripped.pep","Pep.main.index","Pep.all.index")
+      uploaddata1$Center.amino.acid<-unlist(centeranjisuan)
+      colnames(uploaddata1)<-c("Pep.upload","Stripped.pep","Pep.main.index","Pep.all.index","Center.amino.acid")
 
       if(input$xuanzebgdatabase==1){
         wuzhong<-strsplit(input$metabopathspeciesselect,"-")[[1]][1]
