@@ -11,7 +11,7 @@ This tool is developed with R, so if you want to run it locally, you may do some
 
 ```r
 if(!require(pacman)) install.packages("pacman")
-p_load(devtools,shiny,shinyBS,shinyjs,DT,gdata,knitr,ggplot2,ggsci,openxlsx,data.table,Biostrings,stringi,stringr,ggrepel,igraph,ggraph,graphlayouts,scales)
+pacman::p_load(devtools,shiny,shinyBS,shinyjs,DT,gdata,knitr,ggplot2,ggsci,openxlsx,data.table,Biostrings,stringi,stringr,ggrepel,igraph,ggraph,graphlayouts,scales)
 ```
 
 
