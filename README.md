@@ -37,7 +37,7 @@ Then motifeR will be started as below:
 <img src="openfig.jpg" align="right" height="425" width="900"/>
 
 
-**Bravo!** You are successful to run motifeR locally, then you can analyze your own data.
+**Bravo!** You are successful to run motifeR locally, then you can analyze your own data. Enjoy yourself^_^
 
 
 ## Friendly suggestion
