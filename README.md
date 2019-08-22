@@ -1,8 +1,6 @@
 # motifeRapp<img src="motifeRlogo.png" align="right" height="200" width="200"/>
-This is a R package for motifeR software. 
-
-The detailed information can be found at [https://github.com/wangshisheng/motifeR](https://github.com/wangshisheng/motifeR). 
-
+This is a R package for motifeR software.  
+The detailed information can be found at [https://github.com/wangshisheng/motifeR](https://github.com/wangshisheng/motifeR).  
 The online version is available here: [https://www.omicsolution.org/wukong/motifeR](https://www.omicsolution.org/wukong/motifeR).
 
 ## Preparation
@@ -18,8 +16,7 @@ pacman::p_load(devtools,shiny,shinyBS,shinyjs,DT,gdata,knitr,ggplot2,ggsci,openx
 
 **4. Install packages locally.** motifeR needs two more packages ([rmotifx](https://github.com/omarwagih/rmotifx) and [ggseqlogo](https://github.com/omarwagih/ggseqlogo)), however, the functions in the two packages are not enough. I update some functions, and you should download and then install them locally.
 
-rmotifx: download from here: [https://github.com/wangshisheng/motifeR/blob/master/rmotifx_1.0.tar.gz](https://github.com/wangshisheng/motifeR/blob/master/rmotifx_1.0.tar.gz).
-
+rmotifx: download from here: [https://github.com/wangshisheng/motifeR/blob/master/rmotifx_1.0.tar.gz](https://github.com/wangshisheng/motifeR/blob/master/rmotifx_1.0.tar.gz).  
 ggseqlogo: download from here: [https://github.com/wangshisheng/motifeR/blob/master/ggseqlogo_0.1.tar.gz](https://github.com/wangshisheng/motifeR/blob/master/ggseqlogo_0.1.tar.gz).
 
 After downloading them, set the path where the packages are:
