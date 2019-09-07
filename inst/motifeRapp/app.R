@@ -121,15 +121,31 @@ ui<-renderUI(
               condition = "input.metabopath_shujudaoru==2",
               textAreaInput("metabopath_zhantie",label = "Paste your data here：",value="",height ="100px")
             ),
+            hr(),
+            selectInput("origidatatype","Original data type:",choices = c("Normal","MaxQuant","Spectronaut")),
+            bsTooltip("origidatatype",'The original post-translational modification (PTM) data obtained from which kind of search software. If you have processed the PTM data with standard format (e.g. NPT#Y#GSWFTEK), you should choose the "Normal", otherwise, if your PTM data are obtained from MaxQuant or Spectronaut, you should choose the relative type.',
+                      placement = "right",options = list(container = "body")),
             tags$hr(style="border-color: grey;"),
             textInput("centralres","Central amino acid：",value = "ST"),
-            textInput("centralresfuhao","Label of modification：",value = "#"),
-            numericInput("minseqs","Width：",value = 7),
-            numericInput("minseqsnum","Minimum number：",value = 20),
-            numericInput("pvalcutoff","P-value threshold：",value = 0.000001,min = 0),
+            bsTooltip("centralres",'The central residue that users want to analyze, for example, phosphorylation motif analysis, can center on phosphorylated S, T or Y residues. If they want to analyze multi motif sites, here should be "STY".',
+                      placement = "right",options = list(container = "body")),
+            div(id="centralresfuhao_div",textInput("centralresfuhao","Label of modification：",value = "#")),
+            bsTooltip("centralresfuhao_div",'The label represents modification, users can use some label they like, such as "#", "@", where "#" is recommended.',
+                      placement = "right",options = list(container = "body")),
+            div(id="minseqs_div",numericInput("minseqs","Width：",value = 7)),
+            bsTooltip("minseqs_div",'It is the number of left/right side characters of the central residue. The default is "7" but can be changed by the user.',
+                      placement = "right",options = list(container = "body")),
+            div(id="minseqsnum_div",numericInput("minseqsnum","Minimum number：",value = 20)),
+            bsTooltip("minseqsnum_div","This threshold refers to the minimum number of times you wish each of your extracted motifs to occur in the data set.",
+                      placement = "right",options = list(container = "body")),
+            div(id="pvalcutoff_div",numericInput("pvalcutoff","P-value threshold：",value = 0.000001,min = 0)),
+            bsTooltip("pvalcutoff_div","The p-value threshold for the binomial probability. This is used for the selection of significant residue/position in the motif.",
+                      placement = "right",options = list(container = "body")),
             tags$hr(style="border-color: grey;"),
-            radioButtons("xuanzebgdatabase",label="",choices = list("1. Select" = 1,"2. Upload"=2),
-                         selected = 1,inline = TRUE),
+            div(id="xuanzebgdatabase_div",radioButtons("xuanzebgdatabase",label="",choices = list("1. Select" = 1,"2. Upload"=2),
+                                 selected = 1,inline = TRUE)),
+            bsTooltip("xuanzebgdatabase_div","Select or upload the background dataset.",
+                      placement = "bottom",options = list(container = "body")),
             conditionalPanel(
               condition = "input.xuanzebgdatabase==1",
               uiOutput("metabopathspecies")
@@ -142,7 +158,25 @@ ui<-renderUI(
           mainPanel(
             width = 9,
             hr(),
-            dataTableOutput("seqrawdata")
+            actionButton("mcsbtn_seqrawdata","Calculate",icon("paper-plane"),
+                         style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+            radioButtons(
+              "seqrawdataxuanze",
+              label = h4(""),
+              choices = list("Original data" = 1,"Annotated data"=2),
+              selected = 1,
+              inline = TRUE
+            ),
+            tags$hr(style="border-color: grey;"),
+            conditionalPanel(
+              condition = 'input.seqrawdataxuanze==1',
+              dataTableOutput("seqrawdata")
+            ),
+            conditionalPanel(
+              condition = 'input.seqrawdataxuanze==2',
+              downloadButton("seqannotatedatadl","Download"),
+              dataTableOutput("seqannotatedata")
+            )
           )
         )
       ),
@@ -152,9 +186,15 @@ ui<-renderUI(
           sidebarPanel(
             width = 3,
             h4("Pre-alignment"),
-            checkboxInput('seqalignif', '1. Pre-aligned or not ?', TRUE),
-            checkboxInput('classicmultisiteif', '2. Classical multiple sites analysis or not ?', TRUE),
-            checkboxInput('seqalignhanif', '3. Check if containing some regular sequence ?', FALSE),
+            div(id="seqalignif_div",checkboxInput('seqalignif', '1. Pre-aligned or not ?', TRUE)),
+            bsTooltip("seqalignif_div","Whether to pre-align your sequences. If your sequences are standard (e.g. 15 length amino acids), you can unselect this parameter. Default is true.",
+                      placement = "right",options = list(container = "body")),
+            div(id="classicmultisiteif_div",checkboxInput('classicmultisiteif', '2. Classical multiple sites analysis or not ?', TRUE)),
+            bsTooltip("classicmultisiteif_div",'Whether to process classical analysis. Classical analysis means not replacing the other modified sites with letter "Z" after pre-alignment, for example "TSLWNPT#Y#GSWFTEK" to "TSLWNPTYGSWFTEK", not to "TSLWNPZYGSWFTEK". If true, do not process transformation, otherwise, transformation.',
+                      placement = "right",options = list(container = "body")),
+            div(id="seqalignhanif_div",checkboxInput('seqalignhanif', '3. Check if containing some regular sequence ?', FALSE)),
+            bsTooltip("seqalignhanif_div",'If users want to check whether the aligned peptides contain some specific sequences, for example, you want to find those peptides whose 3th and 5th position are R (arginine), then you can select this parameter and type in a simple regular expression, like "^\\\\w{2}R\\\\w{1}R". Otherwise, you just unselect it.',
+                      placement = "right",options = list(container = "body")),
             conditionalPanel(
               condition = "input.seqalignhanif==true",
               textInput("seqalignhan","Regular expression：",value = "^\\w{2}R\\w{1}R")
@@ -175,7 +215,17 @@ ui<-renderUI(
             tags$hr(style="border-color: grey;"),
             conditionalPanel(
               condition = "input.prealignxuanze==1",
-              downloadButton("seqduiqidl","Download"),
+              fluidRow(
+                column(
+                  2,
+                  downloadButton("seqduiqidl","Download")
+                ),
+                column(
+                  2,
+                  actionButton("mcsbtn_resjieshi","Result description",icon("file-alt"),
+                               style="color: black; background-color: #E6E6FA; border-color: #E6E6FA")
+                )
+              ),
               dataTableOutput("seqduiqi")
             ),
             conditionalPanel(
@@ -185,7 +235,17 @@ ui<-renderUI(
               plotOutput("seqduiqiplot",height = "800px"),
               tags$hr(style="border-color: grey;"),
               h4("Multi-Sites Data:"),
-              downloadButton("seqduiqiduositedl","Download"),
+              fluidRow(
+                column(
+                  2,
+                  downloadButton("seqduiqiduositedl","Download")
+                ),
+                column(
+                  2,
+                  actionButton("mcsbtn_resjieshi2","Result description",icon("file-alt"),
+                               style="color: black; background-color: #E6E6FA; border-color: #E6E6FA")
+                )
+              ),
               dataTableOutput("seqduiqiduosite")
             )
           )
@@ -196,7 +256,15 @@ ui<-renderUI(
         sidebarLayout(
           sidebarPanel(
             width = 3,
-            checkboxInput("beijingif","Upload your own background data ?",FALSE),
+            div(id="beijingif_div",checkboxInput("beijingif","Upload your own background data?",FALSE)),
+            bsTooltip("beijingif_div",'The uploaded database must contain peptide sequences with standard length (e.g. 15 length amino acids). Please note, if you upload you own fasta file as background database in the "Import Data" step, you should unselect this parameter. If you choose this parameter stubbornly, this software will take the data in this step as background database and ignore the fasta file that you upload before.',
+                      placement = "bottom",options = list(container = "body")),
+            #popify(
+            #  checkboxInput("beijingif","Upload your own background data?",FALSE),
+            #  "Upload your own background data?",
+            #  'The uploaded database must contain peptide sequences with standard length (e.g. 15 length amino acids). Please note, if you upload you own fasta file as background database in the "Import Data" step, you should unselect this parameter. If you choose this parameter stubbornly, this software will take the data in this step as background database and ignore the fasta file that you upload before.',
+            #  placement = "bottom"
+            #),
             conditionalPanel(
               condition = "input.beijingif==true",
               radioButtons(
@@ -234,8 +302,12 @@ ui<-renderUI(
         sidebarLayout(
           sidebarPanel(
             width = 3,
-            checkboxInput("motifquanbuif","Species data as background ?",TRUE),
-            checkboxInput("onlymultisiteif","Only use multi-site data ?",FALSE),
+            #div(id="motifquanbuif_div",checkboxInput("motifquanbuif","Species data as background ?",TRUE)),
+            #bsTooltip("motifquanbuif_div",'If you upload your own fasta file as background database in the "Import Data" step, you can ignore this parameter (select or unselect is same). Otherwise, if you choose the database in our system (i.e., human) in the ‘Import Data’ step, selecting this parameter means this software will take the database in our system as background database. If you don’t choose, the software will take the foreground data as background database.',
+            #          placement = "bottom",options = list(container = "body")),
+            div(id="onlymultisiteif_div",checkboxInput("onlymultisiteif","Only use multi-site data ?",FALSE)),
+            bsTooltip("onlymultisiteif_div",'If selected, this tool will only take the peptides with multi modification sites as foreground data, that is, it will use the sequences in the Seqwindows_MultiSites column obtain from "Pre-alignment" step as foreground data.',
+                      placement = "bottom",options = list(container = "body")),
             tags$hr(style="border-color: grey;"),
             actionButton("mcsbtn_motifquanbu","Calculate",icon("paper-plane"),
                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
@@ -256,7 +328,17 @@ ui<-renderUI(
                 div(
                   id="motiffujidfxuanze_btn",
                   h4("1. Motif enrichment results:"),
-                  downloadButton("motiffujidl","Download"),
+                  fluidRow(
+                    column(
+                      2,
+                      downloadButton("motiffujidl","Download")
+                    ),
+                    column(
+                      2,
+                      actionButton("mcsbtn_resjieshi3","Result description",icon("file-alt"),
+                                   style="color: black; background-color: #E6E6FA; border-color: #E6E6FA")
+                    )
+                  ),
                   dataTableOutput("motiffuji"),
                   h4("2. Enrichment results mapped to alignment results:"),
                   downloadButton("motiffujidl2","Download"),
@@ -277,8 +359,12 @@ ui<-renderUI(
         sidebarLayout(
           sidebarPanel(
             width = 3,
-            textInput("enrichseqnum","Motif index for plot：",value = "1"),
-            checkboxInput("equalheightif","Equal height or not?",FALSE),
+            div(id='enrichseqnum_div',textInput("enrichseqnum","Motif index for plot：",value = "1")),
+            bsTooltip("enrichseqnum_div",'Which motif would be plotted. If users only type in one number, it will plot the relative motif. If users type in "1-10", it will plot the 1th to 10th motifs.',
+                      placement = "bottom",options = list(container = "body")),
+            div(id='equalheightif_div',checkboxInput("equalheightif","Equal height or not?",FALSE)),
+            bsTooltip("equalheightif_div",'Whether all residues in the figure have equal height. Default is false.',
+                      placement = "bottom",options = list(container = "body")),
             tags$hr(style="border-color: grey;"),
             actionButton("mcsbtn_motifplot","Calculate",icon("paper-plane"),
                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
@@ -308,8 +394,12 @@ ui<-renderUI(
         sidebarLayout(
           sidebarPanel(
             width = 3,
-            numericInput("NetworKINcutoff","minimum NetworKIN score:",value = 3),
-            checkboxInput("genenamesif","Show gene names or not?",TRUE),
+            div(id='NetworKINcutoff_div',numericInput("NetworKINcutoff","minimum NetworKIN score:",value = 3)),
+            bsTooltip("NetworKINcutoff_div",'A numeric value between 1 and infinity setting the minimum NetworKIN score.',
+                      placement = "bottom",options = list(container = "body")),
+            div(id='genenamesif_div',checkboxInput("genenamesif","Show gene names or not?",TRUE)),
+            bsTooltip("genenamesif_div",'If true, the gene names will be appeared in the network plot, otherwise, the uniprot ids will be shown.',
+                      placement = "bottom",options = list(container = "body")),
             uiOutput("kinasemotifui"),
             tags$hr(style="border-color: grey;"),
             actionButton("mcsbtn_kniase","Calculate",icon("paper-plane"),
@@ -321,7 +411,17 @@ ui<-renderUI(
               id="subnav",
               tabPanel(
                 "Results",
-                downloadButton("kinasedatadl","Download"),
+                fluidRow(
+                  column(
+                    2,
+                    downloadButton("kinasedatadl","Download")
+                  ),
+                  column(
+                    2,
+                    actionButton("mcsbtn_resjieshi4","Result description",icon("file-alt"),
+                                 style="color: black; background-color: #E6E6FA; border-color: #E6E6FA")
+                  )
+                ),
                 dataTableOutput("kinasedata")
               ),
               tabPanel(
@@ -343,7 +443,9 @@ ui<-renderUI(
         sidebarLayout(
           sidebarPanel(
             width = 3,
-            checkboxInput("refastafileif","Re-upload?",FALSE),
+            div(id='refastafileif_div',checkboxInput("refastafileif","Re-upload?",FALSE)),
+            bsTooltip("refastafileif_div",'This step can build the standard database based on the fata file that users upload, herein there is no species limit. And this results can also be used in "Own background" step. If users want to build their own database, they can select this parameter and then upload a fasta file.',
+                      placement = "bottom",options = list(container = "body")),
             conditionalPanel(
               condition = "input.refastafileif==true",
               fileInput('fastafile', 'Please upload your fasta file：',accept=c('.fasta'))
@@ -354,7 +456,17 @@ ui<-renderUI(
           ),
           mainPanel(
             width = 9,
-            downloadButton("allfastadl","Download"),
+            fluidRow(
+              column(
+                2,
+                downloadButton("allfastadl","Download")
+              ),
+              column(
+                2,
+                actionButton("mcsbtn_resjieshi5","Result description",icon("file-alt"),
+                             style="color: black; background-color: #E6E6FA; border-color: #E6E6FA")
+              )
+            ),
             dataTableOutput("allfasta")
           )
         )
@@ -388,17 +500,26 @@ server<-shinyServer(function(input, output, session){
     fluidRow(
       div(style="text-align:center",h1("~~Welcome~~")),
       column(
-        8,
+        7,
         div(style="text-align:center",h3("Workflow")),
         div(style="text-align:center",
             a(href='#',
               img(src='Figure1app.png',height=imgwidth)))
       ),
       column(
-        4,
+        5,
         div(style="width:fit-content;width:-webkit-fit-content;width:-moz-fit-content;",
-            h3("I. The detailed manual can be found here, please visit our github to get them:"),
-            a(href="https://github.com/wangshisheng/motifeR",h4("https://github.com/wangshisheng/motifeR")))
+            h3("I. The detailed manual can be found here, please visit our github to get it:"),
+            a(href="https://github.com/wangshisheng/motifeR",h4("https://github.com/wangshisheng/motifeR")),
+            h3("II. The source codes are here:"),
+            a(href="https://github.com/wangshisheng/motifeRapp",h4("https://github.com/wangshisheng/motifeRapp")),
+            h3("III. The example data used in this software can be download from here:"),
+            h4("a. Normal data with standard format: "),
+            a(href="https://github.com/wangshisheng/motifeR/blob/master/Normal_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/Normal_Exampledata.csv")),
+            h4("b. PTM data obtained from MaxQuant: "),
+            a(href="https://github.com/wangshisheng/motifeR/blob/master/MaxQuant_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/MaxQuant_Exampledata.csv")),
+            h4("c. PTM data obtained from Spectronaut: "),
+            a(href="https://github.com/wangshisheng/motifeR/blob/master/Spectronaut_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/Spectronaut_Exampledata.csv")))
       )
     )
   })
@@ -409,11 +530,19 @@ server<-shinyServer(function(input, output, session){
     selectizeInput('metabopathspeciesselect', 'Species for background：', choices =metabopath_spedf_paste,options = list(maxOptions = 6000))
   })
   #######
-  seqrawdataout<-reactive({
+  seqrawdataoutxx<-reactive({
     if(input$metabopath_shujudaoru==1){
       files <- input$metabopathfile1
       if(is.null(files)){
-        dataread<-read.csv("phospho.csv",stringsAsFactors = F)
+        if(input$origidatatype=="MaxQuant"){
+          dataread<-read.csv("MaxQuant_Exampledata.csv",stringsAsFactors = F)
+        }
+        else if(input$origidatatype=="Spectronaut"){
+          dataread<-read.csv("Spectronaut_Exampledata.csv",stringsAsFactors = F)
+        }
+        else{
+          dataread<-read.csv("Normal_Exampledata.csv",stringsAsFactors = F)
+        }
       }else{
         if (input$metabopathfileType_Input == "1"){
           dataread<-read.xlsx(files$datapath,rowNames=input$metabopathfirstcol,
@@ -445,9 +574,63 @@ server<-shinyServer(function(input, output, session){
     dataread
   })
   output$seqrawdata<-renderDataTable({
-    dataread<-seqrawdataout()
+    dataread<-seqrawdataoutxx()
     datatable(dataread, options = list(pageLength = 10))
   })
+  
+  seqrawdataout<-reactive({
+    datareadx<-seqrawdataoutxx()
+    origidatatypex<<-isolate(input$origidatatype)
+    Peptides<-vector()
+    if(origidatatypex=="MaxQuant"){
+      withProgress(message = 'Generating data', style = "notification", detail = "index 1", value = 0,{
+        for(i in 1:nrow(datareadx)){
+          pep1<-datareadx[[1]][i]
+          Peptidesi1<-strsplit(gsub("[^0-9.]", ";", pep1),";")[[1]]
+          Peptidesi2<-Peptidesi1[Peptidesi1!=""]
+          for(ii in 1:length(Peptidesi2)){
+            pep1<-gsub(paste0("\\(",Peptidesi2[ii],"\\)"),"#",pep1)
+          }
+          Peptides[i]<-pep1
+          
+          incProgress(1/nrow(datareadx), detail = paste("index", i))
+        }
+      })
+      dataconvert<-data.frame(AnnotatedPeps=Peptides,stringsAsFactors = FALSE)
+    }
+    else if(origidatatypex=="Spectronaut"){
+      withProgress(message = 'Annotated data:',min = 0, max = 2, style = "notification", detail = "Generating data", value = 1,{
+        phosphoindex<-grep("\\[Phospho \\(STY\\)\\]",datareadx[[1]], perl = TRUE)
+        uploaddata1<-datareadx[phosphoindex,]
+        Peptidesx<-gsub("_","",uploaddata1, perl = TRUE)
+        Peptidesx<-gsub("\\[Phospho \\(STY\\)\\]","#",Peptidesx, perl = TRUE)
+        Peptidesx2<-str_replace_all(Peptidesx,"\\[.*?\\]","")
+        
+        shiny::incProgress(1, detail = "Generating data")
+      })
+      dataconvert<-data.frame(AnnotatedPeps=Peptidesx2,stringsAsFactors = FALSE)
+    }
+    else{
+      dataconvert<-datareadx
+    }
+    dataconvert
+  })
+  observeEvent(
+    input$mcsbtn_seqrawdata,{
+      output$seqannotatedata<-renderDataTable({
+        dataread<-seqrawdataout()
+        datatable(dataread, options = list(pageLength = 10))
+      })
+      output$seqannotatedatadl<-downloadHandler(
+        filename = function(){paste("Annotated_data",usertimenum,".csv",sep="")},
+        content = function(file){
+          write.csv(seqrawdataout(),file,row.names=FALSE)
+        }
+      )
+    }
+  )
+  
+  #
   seqbjdataout<-reactive({
     if(input$beijingif){
       files <- input$goortbeijingkufile1
@@ -486,6 +669,7 @@ server<-shinyServer(function(input, output, session){
     datareadbj<-seqbjdataout()
     datatable(datareadbj, options = list(pageLength = 10))
   })
+  
   fastaseqownout<-reactive({
     files <- input$fastafileown
     if(is.null(files)){
@@ -543,8 +727,91 @@ server<-shinyServer(function(input, output, session){
     datareadfasta
   })
   #
+  observeEvent(input$mcsbtn_resjieshi, {
+    showModal(modalDialog(
+      title = "Pre-alignment result description:",
+      paste0("1. Pep.upload: this column contains those peptides users upload."),br(),
+      paste0("2. Stripped.pep: the peptide skeleton."),br(),
+      paste0("3. Pep.main.index: the position of the main modified amino acid in the peptide, for example, if users upload their peptides containing Class I phosphorylation sites with high confidence, such as ‘TSLWNPT#Y@GSWFTEK’, then this software will recognize ‘#’ as Class I phosphorylation site and ‘@’ as non-Class I phosphorylation site by default, so the Pep.main.index will be 7."),br(),
+      paste0("4. Pep.all.index: the position of all modified amino acid in the peptide. As the example in Pep.main.index, the Pep.all.index will be 7;8."),br(),
+      paste0("5. Center.amino.acid: the central amino acid in the aligned peptide."),br(),
+      paste0("6. Seqwindows: the aligned standard peptides. Note for multiple modification sites or types, the column provides peptides with all the sites respectively centered."),br(),
+      paste0("7. PRO.from.Database: provide the protein name containing this peptide from the fasta file the user uploaded."),br(),
+      paste0("8. PROindex.from.Database: the position of modified amino acid in the protein sequence."),br(),
+      paste0("9. Contain.if: whether containing the sequences that match the regular expression (see above), if true, marked with “Yes”, otherwise, “No”. This column only appears when users choose the parameter--- Check if containing some regular sequence."),
+      size ="l",
+      easyClose = TRUE,
+      footer = modalButton("Cancel")
+    ))
+  })
+  observeEvent(input$mcsbtn_resjieshi2, {
+    showModal(modalDialog(
+      title = "Pre-alignment result description:",
+      paste0("1. Pep.upload: this column contains those peptides users upload."),br(),
+      paste0("2. Stripped.pep: the peptide skeleton."),br(),
+      paste0("3. Pep.main.index: the position of the main modified amino acid in the peptide, for example, if users upload their peptides containing Class I phosphorylation sites with high confidence, such as ‘TSLWNPT#Y@GSWFTEK’, then this software will recognize ‘#’ as Class I phosphorylation site and ‘@’ as non-Class I phosphorylation site by default, so the Pep.main.index will be 7."),br(),
+      paste0("4. Pep.all.index: the position of all modified amino acid in the peptide. As the example in Pep.main.index, the Pep.all.index will be 7;8."),br(),
+      paste0("5. Center.amino.acid: the central amino acid in the aligned peptide."),br(),
+      paste0("6. Seqwindows: the aligned standard peptides. Note for multiple modification sites or types, the column provides peptides with all the sites respectively centered."),br(),
+      paste0("7. PRO.from.Database: provide the protein name containing this peptide from the fasta file the user uploaded."),br(),
+      paste0("8. PROindex.from.Database: the position of modified amino acid in the protein sequence."),br(),
+      paste0("9. Contain.if: whether containing the sequences that match the regular expression (see above), if true, marked with “Yes”, otherwise, “No”. This column only appears when users choose the parameter--- Check if containing some regular sequence."),br(),
+      paste0("10. Seqwindows_MultiSites: there are two situations here: First, the modified amino acid will be replaced with “X” if it is not the central residue, for example, ‘NKPTSLWNPT(0.832)Y(0.168)GSWFTEK’ has two phosphosites, one is the 10th amino acid with 0.832 location probability, the other is the 11th amino acid with 0.168 location probability, thus if we transform it like ‘NKPTSLWNPT#Y@GSWFTEK’ (high probability is replaced with ‘#’, while low probability is replaced with ‘@’). Then in motifeR, the 10th amino acid will be considered as central residue, the 11th amino acid will be replaced with “X”, thus the standard sequence is ‘PTSLWNPTYGSWFTE’, correspondingly, the Seqwindows_MultiSites should be ‘PTSLWNPTXGSWFTE’. Second, if we transform this peptide like ‘NKPTSLWNPT#Y#GSWFTEK’, the two amino acids will be both considered as central residue, thus the standard sequence is ‘PTSLWNPTYGSWFTE;TSLWNPTYGSWFTEK’, correspondingly, the Seqwindows_MultiSites is still ‘PTSLWNPTYGSWFTE;TSLWNPTYGSWFTEK’."),
+      size ="l",
+      easyClose = TRUE,
+      footer = modalButton("Cancel")
+    ))
+  })
+  observeEvent(input$mcsbtn_resjieshi3, {
+    showModal(modalDialog(
+      title = "Motif Enrichment result description:",
+      paste0("1. motif: the overrepresented motif."),br(),
+      paste0("2. score: the motif score, which is calculated by taking the sum of the negative log probabilities used to fix each position of the motif. Higher motif scores typically correspond to motifs that are more statistically significant as well as more specific."),br(),
+      paste0("3. fg.matches: frequency of sequences matching this motif in the foreground set."),br(),
+      paste0("4. fg.size: total number of foreground sequences."),br(),
+      paste0("5. bg.matches: frequency of sequences matching this motif in the background set."),br(),
+      paste0("6. bg.size: total number of background sequences."),br(),
+      paste0("7. fold.increase: An indicator of the enrichment level of the extracted motifs. Specifically, it is calculated as (foreground matches/foreground size)/(background matches/background size)."),br(),
+      paste0("8. Enrich.seq: those peptides are overrepresented in this motif."),br(),
+      paste0("9. Enrich.pro: those proteins in which the peptides exist from Enrich.seq."),
+      size ="l",
+      easyClose = TRUE,
+      footer = modalButton("Cancel")
+    ))
+  })
+  observeEvent(input$mcsbtn_resjieshi4, {
+    showModal(modalDialog(
+      title = "Kinase-substrate result description:",
+      paste0("1. KIN_ACC_ID: kinase uniprot id."),br(),
+      paste0("2. KINASE: kinase id."),br(),
+      paste0("3. GENE: kinase gene name."),br(),
+      paste0("4. SUBSTRATE: substrate id."),br(),
+      paste0("5. SUB_ACC_ID: substrate uniprot id."),br(),
+      paste0("6. SUB_GENE: substrate gene name."),br(),
+      paste0("7. networkin_score: the prediction score from networKIN database (https://networkin.info/)."),br(),
+      paste0("8. Enrich.seq: the peptide that is overrepresented in the relevant motif."),br(),
+      paste0("9. Motif: the overrepresented motif."),br(),
+      paste0("10. Pep.upload: the original peptide."),br(),
+      paste0("11. Center.amino.acid: the central amino acid in the aligned peptide."),br(),
+      paste0("12. PROindex.from.Database: the position of modified amino acid in the protein sequence."),br(),
+      size ="l",
+      easyClose = TRUE,
+      footer = modalButton("Cancel")
+    ))
+  })
+  observeEvent(input$mcsbtn_resjieshi5, {
+    showModal(modalDialog(
+      title = "Building species database result description:",
+      paste0("1. ID: uniprot ids."),br(),
+      paste0("2. Windows: the standard peptides."),br(),
+      paste0("3. Center: Central residue."),br(),
+      size ="l",
+      easyClose = TRUE,
+      footer = modalButton("Cancel")
+    ))
+  })
   seqduiqioutx<-reactive({
-    uploaddata1<-datareaddq<-seqrawdataout()
+    uploaddata1<-datareaddq<<-seqrawdataout()
     if(input$seqalignif){
       centralres1<-strsplit(input$centralresfuhao,";|")[[1]]
       centralres<-centralres1[centralres1!=""]
@@ -583,10 +850,18 @@ server<-shinyServer(function(input, output, session){
 
       if(input$xuanzebgdatabase==1){
         wuzhong<-strsplit(input$metabopathspeciesselect,"-")[[1]][1]
-        datafasta<-readAAStringSet(paste0("fasta/",wuzhong,".fasta"))
+        if(is.na(wuzhong)){
+          stop("Please select one background dataset or upload a fasta file as background dataset in the 'Import Data' step!")
+        }else{
+          datafasta<-readAAStringSet(paste0("fasta/",wuzhong,".fasta"))
+        }
       }else{
-        files <- input$fastafileown
-        datafasta<-readAAStringSet(files$datapath)
+        files <- isolate(input$fastafileown)
+        if(is.null(files)){
+          stop("Please select one background dataset or upload a fasta file as background dataset in the 'Import Data' step!")
+        }else{
+          datafasta<-readAAStringSet(files$datapath)
+        }
       }
 
       n_data_fasta<-length(datafasta@ranges@NAMES)
@@ -825,24 +1100,33 @@ server<-shinyServer(function(input, output, session){
       fgseqs<-unique(unlist(lapply(datareaddq$Seqwindows,function(x) strsplit(x,";|::")[[1]])))
     }
 
-    if(is.null(datareadbj)){
-      if(input$xuanzebgdatabase==1){
-        if(input$motifquanbuif){
+    withProgress(message = 'Motif Enrichment:',min = 0, max = 2, style = "notification", detail = "Generating data", value = 1,{
+      if(is.null(datareadbj)){
+        if(input$xuanzebgdatabase==1){
+          #if(input$motifquanbuif){
+          #  load(file = paste0("winsSTY_",wuzhong,".RData"))
+          #  motseq <- motifx(fg.seqs=fgseqs, bg.seqs=unique(seqseqalldf_STY$Windows), central.res = input$centralres,
+          #                   min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
+          #}else{
+          #  #warning("Please note: No background dataset is chosen or uploaded! The foreground dataset is treated as the background database by default, but this is not recommended!")
+          #  motseq <- motifx(fg.seqs=fgseqs, bg.seqs=fgseqs, central.res = input$centralres,
+          #                   min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
+          #}
           load(file = paste0("winsSTY_",wuzhong,".RData"))
           motseq <- motifx(fg.seqs=fgseqs, bg.seqs=unique(seqseqalldf_STY$Windows), central.res = input$centralres,
                            min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
         }else{
-          motseq <- motifx(fg.seqs=fgseqs, bg.seqs=fgseqs, central.res = input$centralres,
+          motseq <- motifx(fg.seqs=fgseqs, bg.seqs=unique(fastaseqownoutdf$Windows), central.res = input$centralres,
                            min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
         }
       }else{
-        motseq <- motifx(fg.seqs=fgseqs, bg.seqs=unique(fastaseqownoutdf$Windows), central.res = input$centralres,
+        motseq <- motifx(fg.seqs=fgseqs, bg.seqs=unique(datareadbj[[1]]),central.res = input$centralres,
                          min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
       }
-    }else{
-      motseq <- motifx(fg.seqs=fgseqs, bg.seqs=unique(datareadbj[[1]]),central.res = input$centralres,
-                       min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
-    }
+      
+      shiny::incProgress(1, detail = "Generating data")
+    })
+    
     #motseq<<-motseq
     if(is.null(motseq)){
       stop("No enrichment results, maybe you need to adjust the 'Minimum number' and/or 'P-value threshold' parameters~~")
@@ -880,24 +1164,33 @@ server<-shinyServer(function(input, output, session){
       fgseqs<-unique(unlist(lapply(datareaddq1,function(x) strsplit(x,";|::")[[1]])))
     }
 
-    if(is.null(datareadbj)){
-      if(input$xuanzebgdatabase==1){
-        if(input$motifquanbuif){
+    withProgress(message = 'Motif Enrichment:',min = 0, max = 2, style = "notification", detail = "Generating data", value = 1,{
+      if(is.null(datareadbj)){
+        if(input$xuanzebgdatabase==1){
+          #if(input$motifquanbuif){
+          #  load(file = paste0("winsSTY_",wuzhong,".RData"))
+          #  motseq <- motifx(fg.seqs=fgseqs, bg.seqs=unique(seqseqalldf_STY$Windows), central.res = input$centralres,
+          #                   min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
+          #}else{
+          #  #warning("Please note: No background dataset is chosen or uploaded! The foreground dataset is treated as the background database by default, but this is not recommended!")
+          #  motseq <- motifx(fg.seqs=fgseqs, bg.seqs=fgseqs, central.res = input$centralres,
+          #                   min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
+          #}
           load(file = paste0("winsSTY_",wuzhong,".RData"))
           motseq <- motifx(fg.seqs=fgseqs, bg.seqs=unique(seqseqalldf_STY$Windows), central.res = input$centralres,
                            min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
         }else{
-          motseq <- motifx(fg.seqs=fgseqs, bg.seqs=fgseqs, central.res = input$centralres,
+          motseq <- motifx(fg.seqs=fgseqs, bg.seqs=unique(fastaseqownoutdf$Windows), central.res = input$centralres,
                            min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
         }
       }else{
-        motseq <- motifx(fg.seqs=fgseqs, bg.seqs=unique(fastaseqownoutdf$Windows), central.res = input$centralres,
+        motseq <- motifx(fg.seqs=fgseqs, bg.seqs=unique(datareadbj[[1]]),central.res = input$centralres,
                          min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
       }
-    }else{
-      motseq <- motifx(fg.seqs=fgseqs, bg.seqs=unique(datareadbj[[1]]),central.res = input$centralres,
-                       min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
-    }
+      
+      shiny::incProgress(1, detail = "Generating data")
+    })
+    
     #motseq<<-motseq
     if(is.null(motseq)){
       stop("No enrichment results, maybe you need to adjust the 'Minimum number' and/or 'P-value threshold' parameters~~")
@@ -971,14 +1264,16 @@ server<-shinyServer(function(input, output, session){
         }
         if(length(enrichseqnumstr)==1){
           enrichseq<-strsplit(motiffujidf$Enrich.seq[enrichseqnumstr],";")[[1]]
-          ggseqlogo(enrichseq, method=equalh)
+          ggseqlogo(enrichseq, method=equalh)+
+            scale_x_discrete(limits=as.character(-input$minseqs:input$minseqs))
         }else{
           motiffujidf1<-motiffujidf[enrichseqnumstr[1]:enrichseqnumstr[2],]
           enrichseq<-lapply(motiffujidf1$Enrich.seq,function(x){
             xx<-strsplit(x,";")[[1]]
           })
           names(enrichseq)<-motiffujidf1$motif
-          ggseqlogo(enrichseq, ncol = 2, method=equalh)
+          ggseqlogo(enrichseq, ncol = 2, method=equalh)+
+            scale_x_discrete(limits=as.character(-input$minseqs:input$minseqs))
         }
       },height = motifplot_height)
 
@@ -992,14 +1287,16 @@ server<-shinyServer(function(input, output, session){
         }
         if(length(enrichseqnumstr)==1){
           enrichseq<-strsplit(motiffujidf$Enrich.seq[enrichseqnumstr],";")[[1]]
-          ggseqlogo(enrichseq, method=equalh)
+          ggseqlogo(enrichseq, method=equalh)+
+            scale_x_discrete(limits=as.character(-input$minseqs:input$minseqs))
         }else{
           motiffujidf1<-motiffujidf[enrichseqnumstr[1]:enrichseqnumstr[2],]
           enrichseq<-lapply(motiffujidf1$Enrich.seq,function(x){
             xx<-strsplit(x,";")[[1]]
           })
           names(enrichseq)<-motiffujidf1$motif
-          ggseqlogo(enrichseq, ncol = 2, method=equalh)
+          ggseqlogo(enrichseq, ncol = 2, method=equalh)+
+            scale_x_discrete(limits=as.character(-input$minseqs:input$minseqs))
         }
       })
 

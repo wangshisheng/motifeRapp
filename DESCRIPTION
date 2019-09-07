@@ -1,7 +1,7 @@
 Package: motifeR
 Type: Package
 Title: motifeR: An integrated web software for identification and visualization of protein post-translational modification motifs
-Version: 0.1.0
+Version: 0.2.0
 Author: Shisheng Wang
 Maintainer: Shisheng Wang <wssdandan2009@outlook.com>
 Description: motifeR is a free, user-friendly and comprehensive web software, can provide three main functions (sequence pre-alignment, motif discovery, kinase-substrate analysis) to help users find motifs of a protein or polypeptide and process kinase-substrate analysis for human data set subsequently.
