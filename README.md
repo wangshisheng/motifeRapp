@@ -3,6 +3,11 @@ This is an R package for motifeR software.
 The detailed information can be found at [https://github.com/wangshisheng/motifeR](https://github.com/wangshisheng/motifeR).  
 The online version is available here: [https://www.omicsolution.org/wukong/motifeR](https://www.omicsolution.org/wukong/motifeR).
 
+## Citation
+If you use this software to analyze your data, please cite our paper like this:
+
+Shisheng Wang, Yue Cai, Jingqiu Cheng, Wenxue Li, Yansheng Liu and Hao Yang. "motifeR: An Integrated Web Software for Identification and Visualization of Protein Post‐Translational Modification Motifs." Proteomics (2019): 201900245. ([DOI: 10.1002/pmic.201900245](https://doi.org/10.1002/pmic.201900245)).
+
 ## Preparation
 This tool is developed with R, so if you want to run it locally, you may do some preparatory work:  
 **1. Install R.** You can download R from here: [https://www.r-project.org/](https://www.r-project.org/).  
