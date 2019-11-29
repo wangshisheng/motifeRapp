@@ -510,16 +510,19 @@ server<-shinyServer(function(input, output, session){
         5,
         div(style="width:fit-content;width:-webkit-fit-content;width:-moz-fit-content;",
             h3("I. The detailed manual can be found here, please visit our github to get it:"),
-            a(href="https://github.com/wangshisheng/motifeR",h4("https://github.com/wangshisheng/motifeR")),
+            a(href="https://github.com/wangshisheng/motifeR",h4("https://github.com/wangshisheng/motifeR"),target="_black"),
             h3("II. The source codes are here:"),
-            a(href="https://github.com/wangshisheng/motifeRapp",h4("https://github.com/wangshisheng/motifeRapp")),
+            a(href="https://github.com/wangshisheng/motifeRapp",h4("https://github.com/wangshisheng/motifeRapp"),target="_black"),
             h3("III. The example data used in this software can be download from here:"),
             h4("a. Normal data with standard format: "),
-            a(href="https://github.com/wangshisheng/motifeR/blob/master/Normal_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/Normal_Exampledata.csv")),
+            a(href="https://github.com/wangshisheng/motifeR/blob/master/Normal_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/Normal_Exampledata.csv"),target="_black"),
             h4("b. PTM data obtained from MaxQuant: "),
-            a(href="https://github.com/wangshisheng/motifeR/blob/master/MaxQuant_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/MaxQuant_Exampledata.csv")),
+            a(href="https://github.com/wangshisheng/motifeR/blob/master/MaxQuant_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/MaxQuant_Exampledata.csv"),target="_black"),
             h4("c. PTM data obtained from Spectronaut: "),
-            a(href="https://github.com/wangshisheng/motifeR/blob/master/Spectronaut_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/Spectronaut_Exampledata.csv")))
+            a(href="https://github.com/wangshisheng/motifeR/blob/master/Spectronaut_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/Spectronaut_Exampledata.csv"),target="_black"),
+            h3("IV. Citation:"),
+            h4("Shisheng Wang, Yue Cai, Jingqiu Cheng, Wenxue Li, Yansheng Liu and Hao Yang. motifeR: An Integrated Web Software for Identification and Visualization of Protein Post‐Translational Modification Motifs. Proteomics: 201900254."),
+            a(href="https://doi.org/10.1002/pmic.201900245",h4("DOI: 10.1002/pmic.201900245"),target="_black"))
       )
     )
   })
@@ -680,9 +683,9 @@ server<-shinyServer(function(input, output, session){
       pro_seqdf_rown<-unlist(lapply(rownames(pro_seqdf1),function(x) strsplit(x,"\\|")[[1]][2]))
       rownames(pro_seqdf1)<-pro_seqdf_rown
       pro_seqdfncar<-unlist(lapply(pro_seqdf1$x,nchar))
-      pro_seqdf<-pro_seqdf1[pro_seqdfncar>20,,drop=FALSE]
-      n_data_fasta<-nrow(pro_seqdf)
       danlength<-input$minseqs
+      pro_seqdf<-pro_seqdf1[pro_seqdfncar>(2*danlength+1),,drop=FALSE]
+      n_data_fasta<-nrow(pro_seqdf)
       wincenter<-strsplit(input$centralres,"")[[1]]
       seqwindowsall_S<-vector()
       seqnamesall_S<-vector()
@@ -1089,10 +1092,10 @@ server<-shinyServer(function(input, output, session){
 
   #
   motiffujiout<-reactive({
-    datareaddq<-seqduiqiout()
-    datareadbj<-seqbjdataout()
-    fastaseqownoutdf<-fastaseqownout()
-    wuzhong<-strsplit(input$metabopathspeciesselect,"-")[[1]][1]
+    datareaddq<<-seqduiqiout()
+    datareadbj<<-seqbjdataout()
+    fastaseqownoutdf<<-fastaseqownout()
+    wuzhong<<-strsplit(input$metabopathspeciesselect,"-")[[1]][1]
     if(input$onlymultisiteif){
       seqduiqiduositedf<-seqduiqiduositeout()
       fgseqs<-unique(unlist(lapply(seqduiqiduositedf$Seqwindows_MultiSites,function(x) strsplit(x,";|::")[[1]])))
@@ -1303,7 +1306,7 @@ server<-shinyServer(function(input, output, session){
       output$motifplotdownload<-downloadHandler(
         filename = function(){paste("Motifplot",usertimenum,".pdf",sep="")},
         content = function(file){
-          pdf(file, width = motifplot_height()/100,height = motifplot_height()/100)
+          pdf(file, width = motifplot_height()/100,height = motifplot_height()/100+3)
           print(motifplotout())
           dev.off()
         }
