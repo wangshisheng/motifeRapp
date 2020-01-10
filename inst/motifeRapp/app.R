@@ -816,9 +816,9 @@ server<-shinyServer(function(input, output, session){
   seqduiqioutx<-reactive({
     uploaddata1<-datareaddq<<-seqrawdataout()
     if(input$seqalignif){
-      centralres1<-strsplit(input$centralresfuhao,";|")[[1]]
-      centralres<-centralres1[centralres1!=""]
-      centralres2<-paste(centralres,collapse = "|")
+      centralres1<<-strsplit(input$centralresfuhao,";|")[[1]]
+      centralres<<-centralres1[centralres1!=""]
+      centralres2<<-paste(centralres,collapse = "|")
       uploaddata1$Stripped.pep<-gsub(paste0("_|",centralres2),"",datareaddq[[1]], perl = TRUE)
       EGindex<-lapply(datareaddq[[1]],function(x){
         xx4<-gregexpr(centralres[1],x)[[1]]
@@ -944,83 +944,90 @@ server<-shinyServer(function(input, output, session){
       length(strsplit(x,";")[[1]])
     }))
     datareaddqx<-datareaddqx1<-datareaddq[sitesnum>1,]
-    Seqwindows_MultiSites<-vector()
-    withProgress(message = 'Generating data', style = "notification", detail = "index 1", value = 0,{
-      for(i in 1:nrow(datareaddqx)){
-        pepindexi1<-as.numeric(strsplit(datareaddqx$Pep.all.index[i],";")[[1]])
-        pepindexi2<-as.numeric(strsplit(datareaddqx$Pep.main.index[i],";")[[1]])
-        pepindexi<-setdiff(pepindexi1,pepindexi2)
-        seqwindowi<-strsplit(datareaddqx$Seqwindows[i],";")[[1]]
-
-        Seqwindows_multix<-vector()
-        for(ii in 1:length(pepindexi2)){
-          seqwindowix<-strsplit(seqwindowi[ii],"")[[1]]
-          if(length(pepindexi)>0){
-            posi<-input$minseqs+1+(pepindexi-pepindexi2[ii])
-            posi_low<-which(posi>length(seqwindowix) | posi<1)
-            if(length(posi_low)>0){
-              seqwindowix[posi[-posi_low]]<-"X"
-            }else{
-              seqwindowix[posi]<-"X"
-            }
-            Seqwindows_multix[ii]<-paste(seqwindowix,collapse ="")
-          }else{
-            Seqwindows_multix[ii]<-seqwindowi[ii]
-          }
-        }
-        Seqwindows_MultiSites[i]<-paste(Seqwindows_multix,collapse =";")
-        incProgress(1/nrow(datareaddqx), detail = paste("index", i))
-      }
-      datareaddqx$Seqwindows_MultiSites<-Seqwindows_MultiSites
-    })
-
-    if(!input$classicmultisiteif){
-      sitesnum_main<-unlist(lapply(datareaddqx$Pep.main.index,function(x){
-        length(strsplit(x,";")[[1]])
-      }))
-      datareaddqx2<-datareaddqx[sitesnum_main>1,]
-      Seqwindows_MultiSites_main<-vector()
+    if(nrow(datareaddqx)>0){
+      Seqwindows_MultiSites<-vector()
       withProgress(message = 'Generating data', style = "notification", detail = "index 1", value = 0,{
-        for(i in 1:nrow(datareaddqx2)){
-          pepindexi2<-as.numeric(strsplit(datareaddqx2$Pep.main.index[i],";")[[1]])
-          seqwindowi<-strsplit(datareaddqx2$Seqwindows[i],";")[[1]]
-
-          Seqwindows_multix_main<-vector()
+        for(i in 1:nrow(datareaddqx)){
+          pepindexi1<-as.numeric(strsplit(datareaddqx$Pep.all.index[i],";")[[1]])
+          pepindexi2<-as.numeric(strsplit(datareaddqx$Pep.main.index[i],";")[[1]])
+          pepindexi<-setdiff(pepindexi1,pepindexi2)
+          seqwindowi<-strsplit(datareaddqx$Seqwindows[i],";")[[1]]
+          
+          Seqwindows_multix<-vector()
           for(ii in 1:length(pepindexi2)){
             seqwindowix<-strsplit(seqwindowi[ii],"")[[1]]
-            posi<-input$minseqs+1+(pepindexi2[-ii]-pepindexi2[ii])
-            posi_low<-which(posi>length(seqwindowix) | posi<1)
-            if(length(posi_low)>0){
-              seqwindowix[posi[-posi_low]]<-"Z"
+            if(length(pepindexi)>0){
+              posi<-input$minseqs+1+(pepindexi-pepindexi2[ii])
+              posi_low<-which(posi>length(seqwindowix) | posi<1)
+              if(length(posi_low)>0){
+                seqwindowix[posi[-posi_low]]<-"X"
+              }else{
+                seqwindowix[posi]<-"X"
+              }
+              Seqwindows_multix[ii]<-paste(seqwindowix,collapse ="")
             }else{
-              seqwindowix[posi]<-"Z"
+              Seqwindows_multix[ii]<-seqwindowi[ii]
             }
-            Seqwindows_multix_main[ii]<-paste(seqwindowix,collapse ="")
-
           }
-          Seqwindows_MultiSites_main[i]<-paste(Seqwindows_multix_main,collapse =";")
-          incProgress(1/nrow(datareaddqx2), detail = paste("index", i))
+          Seqwindows_MultiSites[i]<-paste(Seqwindows_multix,collapse =";")
+          incProgress(1/nrow(datareaddqx), detail = paste("index", i))
         }
-        datareaddqx$Seqwindows_MultiSites[which(sitesnum_main>1)]<-Seqwindows_MultiSites_main
+        datareaddqx$Seqwindows_MultiSites<-Seqwindows_MultiSites
       })
-      #datareaddq_all1<-datareaddq[sitesnum<=1,]
-      #datareaddq_all<-rbind(datareaddq_all1,datareaddqx)
+      if(!input$classicmultisiteif){
+        sitesnum_main<-unlist(lapply(datareaddqx$Pep.main.index,function(x){
+          length(strsplit(x,";")[[1]])
+        }))
+        datareaddqx2<-datareaddqx[sitesnum_main>1,]
+        Seqwindows_MultiSites_main<-vector()
+        withProgress(message = 'Generating data', style = "notification", detail = "index 1", value = 0,{
+          for(i in 1:nrow(datareaddqx2)){
+            pepindexi2<-as.numeric(strsplit(datareaddqx2$Pep.main.index[i],";")[[1]])
+            seqwindowi<-strsplit(datareaddqx2$Seqwindows[i],";")[[1]]
+            
+            Seqwindows_multix_main<-vector()
+            for(ii in 1:length(pepindexi2)){
+              seqwindowix<-strsplit(seqwindowi[ii],"")[[1]]
+              posi<-input$minseqs+1+(pepindexi2[-ii]-pepindexi2[ii])
+              posi_low<-which(posi>length(seqwindowix) | posi<1)
+              if(length(posi_low)>0){
+                seqwindowix[posi[-posi_low]]<-"Z"
+              }else{
+                seqwindowix[posi]<-"Z"
+              }
+              Seqwindows_multix_main[ii]<-paste(seqwindowix,collapse ="")
+              
+            }
+            Seqwindows_MultiSites_main[i]<-paste(Seqwindows_multix_main,collapse =";")
+            incProgress(1/nrow(datareaddqx2), detail = paste("index", i))
+          }
+          datareaddqx$Seqwindows_MultiSites[which(sitesnum_main>1)]<-Seqwindows_MultiSites_main
+        })
+        #datareaddq_all1<-datareaddq[sitesnum<=1,]
+        #datareaddq_all<-rbind(datareaddq_all1,datareaddqx)
+      }
+    }else{
+      datareaddqx<-NULL
     }
     datareaddqx
     #list(datareaddq_all=datareaddq_all,datareaddq_multi=datareaddqx)
   })
   seqduiqiout<-reactive({
-    duiqidfall1<-seqduiqioutx()#isolate(seqduiqioutx())
-    datareaddq_multi1<-isolate(seqduiqiduositeout())
-    datareaddq_multi1$Seqwindows<-datareaddq_multi1$Seqwindows_MultiSites
-    sitesnum<-unlist(lapply(duiqidfall1$Pep.main.index,function(x){
-      length(strsplit(x,";")[[1]])
-    }))
-    if(!input$classicmultisiteif){
-      datareaddq_all1<-duiqidfall1[sitesnum<=1,]
-      duiqidfall<-rbind(datareaddq_all1,datareaddq_multi1[,-ncol(datareaddq_multi1)])
-    }else{
+    duiqidfall1<<-seqduiqioutx()#isolate(seqduiqioutx())
+    datareaddq_multi1<<-isolate(seqduiqiduositeout())
+    if(is.null(datareaddq_multi1)){
       duiqidfall<-duiqidfall1
+    }else{
+      datareaddq_multi1$Seqwindows<-datareaddq_multi1$Seqwindows_MultiSites
+      sitesnum<-unlist(lapply(duiqidfall1$Pep.main.index,function(x){
+        length(strsplit(x,";")[[1]])
+      }))
+      if(!input$classicmultisiteif){
+        datareaddq_all1<-duiqidfall1[sitesnum<=1,]
+        duiqidfall<-rbind(datareaddq_all1,datareaddq_multi1[,-ncol(datareaddq_multi1)])
+      }else{
+        duiqidfall<-duiqidfall1
+      }
     }
     duiqidfall
   })
