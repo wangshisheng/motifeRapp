@@ -476,7 +476,7 @@ ui<-renderUI(
 )
 #
 server<-shinyServer(function(input, output, session){
-  options(shiny.maxRequestSize=30*1024^2)
+  options(shiny.maxRequestSize=3000*1024^2)
   usertimenum<-as.numeric(Sys.time())
   #ui
   output$welcomeui<-renderUI({
