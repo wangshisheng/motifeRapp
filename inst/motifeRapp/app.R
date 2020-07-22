@@ -400,6 +400,9 @@ ui<-renderUI(
             div(id='genenamesif_div',checkboxInput("genenamesif","Show gene names or not?",TRUE)),
             bsTooltip("genenamesif_div",'If true, the gene names will be appeared in the network plot, otherwise, the uniprot ids will be shown.',
                       placement = "bottom",options = list(container = "body")),
+            div(id='matchtypex_div',selectInput("matchtypex","Match type:",choices = c("Kinase"=1,"Substrate"=2))),
+            bsTooltip("matchtypex_div",'If you choose "Kinase", it will match the protein accession id to the "KIN_ACC_ID" column in the KSEA database, otherwise, it matches the "SUB_ACC_ID" column.',
+                      placement = "right",options = list(container = "body")),
             uiOutput("kinasemotifui"),
             tags$hr(style="border-color: grey;"),
             actionButton("mcsbtn_kniase","Calculate",icon("paper-plane"),
@@ -476,7 +479,7 @@ ui<-renderUI(
 )
 #
 server<-shinyServer(function(input, output, session){
-  options(shiny.maxRequestSize=3000*1024^2)
+  options(shiny.maxRequestSize=30*1024^2)
   usertimenum<-as.numeric(Sys.time())
   #ui
   output$welcomeui<-renderUI({
@@ -1414,10 +1417,16 @@ server<-shinyServer(function(input, output, session){
     #}
     #dfmerge1<-base::merge(motiffujidf_motifdf,KSData.filtered,by="KIN_ACC_ID",sort=FALSE)
     #dfmerge<-unique(dfmerge1[,c(1,8,2:3,6,14)])
-    KSData.filtered1<-KSData.filtered[,c(1:3,5,7,8,13)]
-    motiffujidf1<-motiffujidf[,-c(3:8)]
-    dfmerge<-base::merge(KSData.filtered1,motiffujidf1,by.y="PRO.from.Database",by.x="KIN_ACC_ID",sort=FALSE)
-    colnames(dfmerge)[9]<-"Motif"
+    KSData.filtered1<<-KSData.filtered[,c(1:3,5,7,8,13)]
+    motiffujidf1<<-motiffujidf[,-c(3:8)]
+    if(input$matchtypex==1){
+      dfmerge<-base::merge(KSData.filtered1,motiffujidf1,by.y="PRO.from.Database",by.x="KIN_ACC_ID",sort=FALSE)
+      colnames(dfmerge)[9]<-"Motif"
+    }else{
+      dfmerge<-base::merge(KSData.filtered1,motiffujidf1,by.y="PRO.from.Database",by.x="SUB_ACC_ID",sort=FALSE)
+      colnames(dfmerge)[9]<-"Motif"
+    }
+    
     dfmerge
   })
 
