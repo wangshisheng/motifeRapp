@@ -683,7 +683,21 @@ server<-shinyServer(function(input, output, session){
     }else{
       datafasta<-readAAStringSet(files$datapath)
       pro_seqdf<-pro_seqdf1<-as.data.frame(datafasta)
-      pro_seqdf_rown<-unlist(lapply(rownames(pro_seqdf1),function(x) strsplit(x,"\\|")[[1]][2]))
+      #pro_seqdf_rown<-unlist(lapply(rownames(pro_seqdf1),function(x) strsplit(x,"\\|")[[1]][2]))
+      pro_seqdf_rown1<-unlist(lapply(rownames(pro_seqdf1),function(x) strsplit(x,"\\|")[[1]][1]))
+      pro_seqdf_rown2<-unlist(lapply(rownames(pro_seqdf1),function(x) strsplit(x,"\\|")[[1]][2]))
+      if(sum(duplicated(pro_seqdf_rown1))>=1 & sum(duplicated(pro_seqdf_rown2))>=1){
+        pro_seqdf_rown<-rownames(pro_seqdf1)
+      }
+      else if(sum(duplicated(pro_seqdf_rown1))>=1){
+        pro_seqdf_rown<-pro_seqdf_rown2
+      }
+      else if(sum(duplicated(pro_seqdf_rown2))>=1){
+        pro_seqdf_rown<-pro_seqdf_rown1
+      }
+      else{
+        pro_seqdf_rown<-rownames(pro_seqdf1)
+      }
       rownames(pro_seqdf1)<-pro_seqdf_rown
       pro_seqdfncar<-unlist(lapply(pro_seqdf1$x,nchar))
       danlength<-input$minseqs
