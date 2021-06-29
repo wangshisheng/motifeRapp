@@ -1281,7 +1281,6 @@ server<-shinyServer(function(input, output, session){
         library(ggseqlogo)
         library(igraph)
         library(ggraph)
-
         motiffujidf<-isolate(motiffujiout())
         enrichseqnumstr<-isolate(as.numeric(strsplit(input$enrichseqnum,"-|;")[[1]]))
         if(input$equalheightif){
@@ -1305,6 +1304,9 @@ server<-shinyServer(function(input, output, session){
       },height = motifplot_height)
 
       motifplotout<-reactive({
+        library(ggseqlogo)
+        library(igraph)
+        library(ggraph)
         motiffujidf<-isolate(motiffujiout())
         enrichseqnumstr<-isolate(as.numeric(strsplit(input$enrichseqnum,"-|;")[[1]]))
         if(input$equalheightif){
