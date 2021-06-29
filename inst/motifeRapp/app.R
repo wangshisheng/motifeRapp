@@ -10,6 +10,7 @@ library(Biostrings)
 library(stringi)
 library(stringr)
 library(rmotifx)
+library(igraph)
 #library(KSEAapp)
 colpalettes<-unique(c(pal_npg("nrc")(10),pal_aaas("default")(10),pal_nejm("default")(8),pal_lancet("lanonc")(9),
                       pal_jama("default")(7),pal_jco("default")(10),pal_ucscgb("default")(26),pal_d3("category10")(10),
@@ -1279,7 +1280,6 @@ server<-shinyServer(function(input, output, session){
     input$mcsbtn_motifplot,{
       output$motifplot<-renderPlot({
         library(ggseqlogo)
-        library(igraph)
         library(ggraph)
         motiffujidf<-isolate(motiffujiout())
         enrichseqnumstr<-isolate(as.numeric(strsplit(input$enrichseqnum,"-|;")[[1]]))
@@ -1488,7 +1488,6 @@ server<-shinyServer(function(input, output, session){
       output$cmheatmappic<-renderPlot({
         library(graphlayouts)
         library(scales)
-
         dfmergex<-kinasedataout()
         #aa<<-input$kinasemotif
         dfmerge<-isolate(dfmergex[dfmergex$Motif%in%c(input$kinasemotif),])
@@ -1525,23 +1524,33 @@ server<-shinyServer(function(input, output, session){
           theme_graph(base_family="sans")
       },height = cmheatmap_height)
       cmheatmappicout<-reactive({
+        library(graphlayouts)
+        library(scales)
         dfmergex<-kinasedataout()
         #aa<<-input$kinasemotif
         dfmerge<-isolate(dfmergex[dfmergex$Motif%in%c(input$kinasemotif),])
-        nodesdf1<-data.frame(name=c(dfmerge$KIN_ACC_ID,dfmerge$SUB_ACC_ID),
-                             motifgr=c(rep("Kinase",length(dfmerge$KIN_ACC_ID)),rep("Substrate",length(dfmerge$SUB_ACC_ID))),
-                             stringsAsFactors = FALSE)
-        nodesdf3<-nodesdf2<-unique(nodesdf1)
-        jiaohudouyou<-intersect(dfmerge$KIN_ACC_ID,dfmerge$SUB_ACC_ID)
-        if(length(jiaohudouyou)>0) nodesdf3$motifgr[nodesdf2$name %in% jiaohudouyou]<-"Combine"
-        nodesdf<-unique(nodesdf3)#data.frame(name=base::unique(nodesdf2$namex),stringsAsFactors = FALSE)
+        #data.frame(name=base::unique(nodesdf2$namex),stringsAsFactors = FALSE)
         #motifgr<-lapply(nodesdf$name,function(x) paste())
         if(input$genenamesif){
           edgesdf<-data.frame(from=dfmerge$KINASE,to=dfmerge$SUBSTRATE,edgecol=dfmerge$Motif,
                               Scores=scales::rescale(dfmerge$networkin_score,to=c(0.1,5)),stringsAsFactors = FALSE)
+          nodesdf1<-data.frame(name=c(dfmerge$KINASE,dfmerge$SUBSTRATE),
+                               motifgr=c(rep("Kinase",length(dfmerge$KINASE)),rep("Substrate",length(dfmerge$SUBSTRATE))),
+                               stringsAsFactors = FALSE)
+          nodesdf3<-nodesdf2<-unique(nodesdf1)
+          jiaohudouyou<-intersect(dfmerge$KINASE,dfmerge$SUBSTRATE)
+          if(length(jiaohudouyou)>0) nodesdf3$motifgr[nodesdf2$name %in% jiaohudouyou]<-"Combine"
+          nodesdf<-unique(nodesdf3)
         }else{
           edgesdf<-data.frame(from=dfmerge$KIN_ACC_ID,to=dfmerge$SUB_ACC_ID,edgecol=dfmerge$Motif,
                               Scores=scales::rescale(dfmerge$networkin_score,to=c(0.1,5)),stringsAsFactors = FALSE)
+          nodesdf1<-data.frame(name=c(dfmerge$KIN_ACC_ID,dfmerge$SUB_ACC_ID),
+                               motifgr=c(rep("Kinase",length(dfmerge$KIN_ACC_ID)),rep("Substrate",length(dfmerge$SUB_ACC_ID))),
+                               stringsAsFactors = FALSE)
+          nodesdf3<-nodesdf2<-unique(nodesdf1)
+          jiaohudouyou<-intersect(dfmerge$KIN_ACC_ID,dfmerge$SUB_ACC_ID)
+          if(length(jiaohudouyou)>0) nodesdf3$motifgr[nodesdf2$name %in% jiaohudouyou]<-"Combine"
+          nodesdf<-unique(nodesdf3)
         }
         gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf)
         V(gp)$grp <- nodesdf$motifgr
