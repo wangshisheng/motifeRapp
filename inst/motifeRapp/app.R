@@ -749,7 +749,8 @@ server<-shinyServer(function(input, output, session){
       paste0("6. Seqwindows: the aligned standard peptides. Note for multiple modification sites or types, the column provides peptides with all the sites respectively centered."),br(),
       paste0("7. PRO.from.Database: provide the protein name containing this peptide from the fasta file the user uploaded."),br(),
       paste0("8. PROindex.from.Database: the position of modified amino acid in the protein sequence."),br(),
-      paste0("9. Contain.if: whether containing the sequences that match the regular expression (see above), if true, marked with “Yes”, otherwise, “No”. This column only appears when users choose the parameter--- Check if containing some regular sequence."),
+      paste0("9. PRO.CombinedID: Combining the protein ID, Center.amino.acid and PROindex.from.Database together with '_'."),
+      paste0("10. Contain.if: whether containing the sequences that match the regular expression (see above), if true, marked with “Yes”, otherwise, “No”. This column only appears when users choose the parameter--- Check if containing some regular sequence."),
       size ="l",
       easyClose = TRUE,
       footer = modalButton("Cancel")
