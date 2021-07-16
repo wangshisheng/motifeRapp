@@ -21,26 +21,16 @@ colpalettes<-unique(c(pal_npg("nrc")(10),pal_aaas("default")(10),pal_nejm("defau
 #
 ui<-renderUI(
   fluidPage(
-    title="motifeR",
+    title="PTMoreR",
     shinyjs::useShinyjs(),
-    fluidRow(
-      column(6,div(
-        HTML(
-          "<div style='text-align:right;margin-top:20px;margin-right:0px'>
-          <a href='#' target=''><img src='motifeRti.png' width='100px'>
-          </a>
-          </div>"
-        )
-        )),
-      column(6,div(
-        HTML(
-          "<div style='text-align:left;margin-left:-20px'>
-          <a href='#' target=''><img src='motifeRlogo.png' height='80px'>
-          </a>
-          </div>"
-        )
-        ))
-        ),
+    fluidRow(div(
+      HTML(
+        "<div style='text-align:center;margin-top:5px;margin-right:0px'>
+            <a href='#' target=''><img src='MotifeRti.png' width='200px'>
+            </a>
+            </div>"
+      )
+    )),
     tagList(
       tags$head(
         tags$link(rel="stylesheet", type="text/css",href="busystyle.css"),
@@ -514,18 +504,18 @@ server<-shinyServer(function(input, output, session){
         5,
         div(style="width:fit-content;width:-webkit-fit-content;width:-moz-fit-content;",
             h3("I. The detailed manual can be found here, please visit our github to get it:"),
-            a(href="https://github.com/wangshisheng/motifeR",h4("https://github.com/wangshisheng/motifeR"),target="_black"),
+            a(href="https://github.com/wangshisheng/PTMoreR",h4("https://github.com/wangshisheng/PTMoreR"),target="_black"),
             h3("II. The source codes are here:"),
-            a(href="https://github.com/wangshisheng/motifeRapp",h4("https://github.com/wangshisheng/motifeRapp"),target="_black"),
+            a(href="https://github.com/wangshisheng/PTMoreRapp",h4("https://github.com/wangshisheng/PTMoreRapp"),target="_black"),
             h3("III. The example data used in this software can be download from here:"),
             h4("a. Normal data with standard format: "),
-            a(href="https://github.com/wangshisheng/motifeR/blob/master/Normal_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/Normal_Exampledata.csv"),target="_black"),
+            a(href="https://github.com/wangshisheng/PTMoreR/blob/master/Normal_Exampledata.csv",h4("https://github.com/wangshisheng/PTMoreR/blob/master/Normal_Exampledata.csv"),target="_black"),
             h4("b. PTM data obtained from MaxQuant: "),
-            a(href="https://github.com/wangshisheng/motifeR/blob/master/MaxQuant_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/MaxQuant_Exampledata.csv"),target="_black"),
+            a(href="https://github.com/wangshisheng/PTMoreR/blob/master/MaxQuant_Exampledata.csv",h4("https://github.com/wangshisheng/PTMoreR/blob/master/MaxQuant_Exampledata.csv"),target="_black"),
             h4("c. PTM data obtained from Spectronaut: "),
-            a(href="https://github.com/wangshisheng/motifeR/blob/master/Spectronaut_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/Spectronaut_Exampledata.csv"),target="_black"),
+            a(href="https://github.com/wangshisheng/PTMoreR/blob/master/Spectronaut_Exampledata.csv",h4("https://github.com/wangshisheng/PTMoreR/blob/master/Spectronaut_Exampledata.csv"),target="_black"),
             h3("IV. Citation:"),
-            h4("Shisheng Wang, Yue Cai, Jingqiu Cheng, Wenxue Li, Yansheng Liu and Hao Yang. motifeR: An Integrated Web Software for Identification and Visualization of Protein Post‐Translational Modification Motifs. Proteomics: 201900254."),
+            h4("Shisheng Wang, Yue Cai, Jingqiu Cheng, Wenxue Li, Yansheng Liu and Hao Yang. PTMoreR: An Integrated Web Software for Identification and Visualization of Protein Post‐Translational Modification Motifs. Proteomics: 201900254."),
             a(href="https://doi.org/10.1002/pmic.201900245",h4("DOI: 10.1002/pmic.201900245"),target="_black"))
       )
     )
@@ -777,7 +767,7 @@ server<-shinyServer(function(input, output, session){
       paste0("7. PRO.from.Database: provide the protein name containing this peptide from the fasta file the user uploaded."),br(),
       paste0("8. PROindex.from.Database: the position of modified amino acid in the protein sequence."),br(),
       paste0("9. Contain.if: whether containing the sequences that match the regular expression (see above), if true, marked with “Yes”, otherwise, “No”. This column only appears when users choose the parameter--- Check if containing some regular sequence."),br(),
-      paste0("10. Seqwindows_MultiSites: there are two situations here: First, the modified amino acid will be replaced with “X” if it is not the central residue, for example, ‘NKPTSLWNPT(0.832)Y(0.168)GSWFTEK’ has two phosphosites, one is the 10th amino acid with 0.832 location probability, the other is the 11th amino acid with 0.168 location probability, thus if we transform it like ‘NKPTSLWNPT#Y@GSWFTEK’ (high probability is replaced with ‘#’, while low probability is replaced with ‘@’). Then in motifeR, the 10th amino acid will be considered as central residue, the 11th amino acid will be replaced with “X”, thus the standard sequence is ‘PTSLWNPTYGSWFTE’, correspondingly, the Seqwindows_MultiSites should be ‘PTSLWNPTXGSWFTE’. Second, if we transform this peptide like ‘NKPTSLWNPT#Y#GSWFTEK’, the two amino acids will be both considered as central residue, thus the standard sequence is ‘PTSLWNPTYGSWFTE;TSLWNPTYGSWFTEK’, correspondingly, the Seqwindows_MultiSites is still ‘PTSLWNPTYGSWFTE;TSLWNPTYGSWFTEK’."),
+      paste0("10. Seqwindows_MultiSites: there are two situations here: First, the modified amino acid will be replaced with “X” if it is not the central residue, for example, ‘NKPTSLWNPT(0.832)Y(0.168)GSWFTEK’ has two phosphosites, one is the 10th amino acid with 0.832 location probability, the other is the 11th amino acid with 0.168 location probability, thus if we transform it like ‘NKPTSLWNPT#Y@GSWFTEK’ (high probability is replaced with ‘#’, while low probability is replaced with ‘@’). Then in PTMoreR, the 10th amino acid will be considered as central residue, the 11th amino acid will be replaced with “X”, thus the standard sequence is ‘PTSLWNPTYGSWFTE’, correspondingly, the Seqwindows_MultiSites should be ‘PTSLWNPTXGSWFTE’. Second, if we transform this peptide like ‘NKPTSLWNPT#Y#GSWFTEK’, the two amino acids will be both considered as central residue, thus the standard sequence is ‘PTSLWNPTYGSWFTE;TSLWNPTYGSWFTEK’, correspondingly, the Seqwindows_MultiSites is still ‘PTSLWNPTYGSWFTE;TSLWNPTYGSWFTEK’."),
       size ="l",
       easyClose = TRUE,
       footer = modalButton("Cancel")
@@ -892,6 +882,7 @@ server<-shinyServer(function(input, output, session){
       seqseqall<-vector()
       proidall<-vector()
       proidindexall<-vector()
+      PRO.CombinedID<-vector()
       withProgress(message = 'Generating data', style = "notification", detail = "index 1", value = 0,{
         for(i in 1:nrow(uploaddata1)){
           seqindex1<-grep(uploaddata1$Stripped.pep[i],pro_seqdf$x, perl = TRUE)
@@ -928,10 +919,15 @@ server<-shinyServer(function(input, output, session){
             seqseqall[i]<-paste(seqseqall1,collapse = "::")#"_",";"
             proidall[i]<-paste(pro_seqdfnames[seqindex1],collapse = "::")
             proidindexall[i]<-paste(proidindexall1,collapse = "::")
+            PRO.CombinedID[i]<-paste(paste0(pro_seqdfnames[seqindex1],"_",
+                                            strsplit(uploaddata1$Center.amino.acid[i],";")[[1]],
+                                            strsplit(proidindexall1,";")[[1]]),
+                                     collapse = "::")
           }else{
             seqseqall[i]<-"No Match"
             proidall[i]<-"No Match"
             proidindexall[i]<-"No Match"
+            PRO.CombinedID[i]<-"No Match"
           }
 
           incProgress(1/nrow(uploaddata1), detail = paste("index", i))
@@ -941,6 +937,7 @@ server<-shinyServer(function(input, output, session){
       uploaddata1$Seqwindows<-seqseqall
       uploaddata1$PRO.from.Database<-proidall
       uploaddata1$PROindex.from.Database<-proidindexall
+      uploaddata1$PRO.CombinedID<-PRO.CombinedID
       datareaddq<-uploaddata1
     }
 
@@ -953,15 +950,23 @@ server<-shinyServer(function(input, output, session){
       }
       datareaddq$Contain.if<-containif
     }
-    datareaddqxx<-datareaddq[datareaddq$Seqwindows!="No Match",]
+    if(ncol(datareaddq)>2){
+      datareaddqxx<-datareaddq[datareaddq$Seqwindows!="No Match",]
+    }else{
+      datareaddqxx<-datareaddq
+    }
     datareaddqxx
   })
   seqduiqiduositeout<-reactive({
-    datareaddq<-seqduiqioutx()#isolate(seqduiqioutx())
+    datareaddq<-datareaddqxx<<-seqduiqioutx()#isolate(seqduiqioutx())
     sitesnum<-unlist(lapply(datareaddq$Pep.all.index,function(x){
       length(strsplit(x,";")[[1]])
     }))
-    datareaddqx<-datareaddqx1<-datareaddq[sitesnum>1,]
+    if(is.null(sitesnum)){
+      datareaddqx<-matrix(ncol = 1, nrow = 0)
+    }else{
+      datareaddqx<-datareaddqx1<-datareaddq[sitesnum>1,]
+    }
     if(nrow(datareaddqx)>0){
       Seqwindows_MultiSites<-vector()
       withProgress(message = 'Generating data', style = "notification", detail = "index 1", value = 0,{
@@ -1073,14 +1078,20 @@ server<-shinyServer(function(input, output, session){
     sitesnum<-unlist(lapply(datareaddq$Pep.all.index,function(x){
       length(strsplit(x,";")[[1]])
     }))
-    datareaddq1<-as.data.frame(table(sitesnum))
-    ggplot(datareaddq1,aes(x=sitesnum,y=Freq, group=1))+
-      geom_bar(stat = "identity",col=colpalettes[1:nrow(datareaddq1)],fill=colpalettes[1:nrow(datareaddq1)],alpha=0.8)+
-      geom_line(size=1.5,col=colpalettes[17]) +
-      geom_point(size=6, col=colpalettes[16],shape=18)+
-      geom_text_repel(aes(label=Freq),size=6)+
-      labs(x="Sites Number",y="Counts",title = "Distribution of Modification Sites")+
-      theme_bw()
+    if(is.null(sitesnum)){
+      plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
+      text(x = 0.34, y = 0.9, paste("No plot here~~"),
+           cex = 1.5, col = "black", family="serif", font=2, adj=0.5)
+    }else{
+      datareaddq1<-as.data.frame(table(sitesnum))
+      ggplot(datareaddq1,aes(x=sitesnum,y=Freq, group=1))+
+        geom_bar(stat = "identity",col=colpalettes[1:nrow(datareaddq1)],fill=colpalettes[1:nrow(datareaddq1)],alpha=0.8)+
+        geom_line(size=1.5,col=colpalettes[17]) +
+        geom_point(size=6, col=colpalettes[16],shape=18)+
+        geom_text_repel(aes(label=Freq),size=6)+
+        labs(x="Sites Number",y="Counts",title = "Distribution of Modification Sites")+
+        theme_bw()
+    }
   })
   seqduiqiplotout<-reactive({
     datareaddq<-seqduiqievent()#isolate(seqduiqiout())
@@ -1118,6 +1129,8 @@ server<-shinyServer(function(input, output, session){
   #
   motiffujiout<-reactive({
     datareaddq<<-seqduiqiout()
+    if(ncol(datareaddq)==1) colnames(datareaddq)<-"Seqwindows"
+    if(ncol(datareaddq)==2) colnames(datareaddq)<-c("Seqwindows","Contain.if")
     datareadbj<<-seqbjdataout()
     fastaseqownoutdf<<-fastaseqownout()
     wuzhong<<-strsplit(input$metabopathspeciesselect,"-")[[1]][1]
@@ -1170,16 +1183,22 @@ server<-shinyServer(function(input, output, session){
   })
   motiffujiout2<-reactive({
     datareaddq<-seqduiqiout()
-    motiffujioutx<-motiffujiout()[,-9]
-    tabdata1<-tidyr::separate_rows(motiffujioutx, Enrich.seq, sep =";")
-    tabdata1x<-unique(tabdata1)
-    tabdata2<-tidyr::separate_rows(datareaddq[,-c(2:4)], Seqwindows,PROindex.from.Database, sep =";")
-    tabdata3<-unique(tabdata2)
-    tabdata4<-base::merge(tabdata1x,tabdata3,by.x="Enrich.seq",by.y="Seqwindows",sort=FALSE)
+    if(ncol(datareaddq)<3){
+      tabdata4<-NULL
+    }else{
+      motiffujioutx<-motiffujiout()[,-9]
+      tabdata1<-tidyr::separate_rows(motiffujioutx, Enrich.seq, sep =";")
+      tabdata1x<-unique(tabdata1)
+      tabdata2<-tidyr::separate_rows(datareaddq[,-c(2:4)], Seqwindows,PROindex.from.Database, sep =";")
+      tabdata3<-unique(tabdata2)
+      tabdata4<-base::merge(tabdata1x,tabdata3,by.x="Enrich.seq",by.y="Seqwindows",sort=FALSE)
+    }
     tabdata4
   })
   regularmotiffujiout<-reactive({
     datareaddq<<-seqduiqiout()
+    if(ncol(datareaddq)==1) colnames(datareaddq)<-"Seqwindows"
+    if(ncol(datareaddq)==2) colnames(datareaddq)<-c("Seqwindows","Contain.if")
     datareadbj<<-seqbjdataout()
     fastaseqownoutdf<<-fastaseqownout()
     wuzhong<<-strsplit(input$metabopathspeciesselect,"-")[[1]][1]
@@ -1280,7 +1299,9 @@ server<-shinyServer(function(input, output, session){
     input$mcsbtn_motifplot,{
       output$motifplot<-renderPlot({
         library(ggseqlogo)
+        library(igraph)
         library(ggraph)
+
         motiffujidf<-isolate(motiffujiout())
         enrichseqnumstr<-isolate(as.numeric(strsplit(input$enrichseqnum,"-|;")[[1]]))
         if(input$equalheightif){
@@ -1304,9 +1325,6 @@ server<-shinyServer(function(input, output, session){
       },height = motifplot_height)
 
       motifplotout<-reactive({
-        library(ggseqlogo)
-        library(igraph)
-        library(ggraph)
         motiffujidf<-isolate(motiffujiout())
         enrichseqnumstr<-isolate(as.numeric(strsplit(input$enrichseqnum,"-|;")[[1]]))
         if(input$equalheightif){
@@ -1488,9 +1506,9 @@ server<-shinyServer(function(input, output, session){
       output$cmheatmappic<-renderPlot({
         library(graphlayouts)
         library(scales)
-        dfmergex<-kinasedataout()
+        dfmergex<<-kinasedataout()
         #aa<<-input$kinasemotif
-        dfmerge<-isolate(dfmergex[dfmergex$Motif%in%c(input$kinasemotif),])
+        dfmerge<<-isolate(dfmergex[dfmergex$Motif%in%c(input$kinasemotif),])
         #data.frame(name=base::unique(nodesdf2$namex),stringsAsFactors = FALSE)
         #motifgr<-lapply(nodesdf$name,function(x) paste())
         if(input$genenamesif){
@@ -1562,7 +1580,7 @@ server<-shinyServer(function(input, output, session){
           theme_graph(base_family="sans")
       })
       output$cmheatmappicdl<-downloadHandler(
-        filename = function(){paste("Kinase_network",usertimenum,".pdf",sep="")},
+        filename = function(){paste("KinaseSubstrate_network",usertimenum,".pdf",sep="")},
         content = function(file){
           pdf(file, width = cmheatmap_height()/80+3,height = cmheatmap_height()/80+2)
           print(cmheatmappicout())
