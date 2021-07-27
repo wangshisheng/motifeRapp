@@ -21,12 +21,12 @@ colpalettes<-unique(c(pal_npg("nrc")(10),pal_aaas("default")(10),pal_nejm("defau
 #
 ui<-renderUI(
   fluidPage(
-    title="PTMoreR",
+    title="motifeR",
     shinyjs::useShinyjs(),
     fluidRow(div(
       HTML(
         "<div style='text-align:center;margin-top:5px;margin-right:0px'>
-            <a href='#' target=''><img src='MotifeRti.png' width='200px'>
+            <a href='#' target=''><img src='motifeRti.png' width='200px'>
             </a>
             </div>"
       )
@@ -504,18 +504,18 @@ server<-shinyServer(function(input, output, session){
         5,
         div(style="width:fit-content;width:-webkit-fit-content;width:-moz-fit-content;",
             h3("I. The detailed manual can be found here, please visit our github to get it:"),
-            a(href="https://github.com/wangshisheng/PTMoreR",h4("https://github.com/wangshisheng/PTMoreR"),target="_black"),
+            a(href="https://github.com/wangshisheng/motifeR",h4("https://github.com/wangshisheng/motifeR"),target="_black"),
             h3("II. The source codes are here:"),
-            a(href="https://github.com/wangshisheng/PTMoreRapp",h4("https://github.com/wangshisheng/PTMoreRapp"),target="_black"),
+            a(href="https://github.com/wangshisheng/motifeRapp",h4("https://github.com/wangshisheng/motifeRapp"),target="_black"),
             h3("III. The example data used in this software can be download from here:"),
             h4("a. Normal data with standard format: "),
-            a(href="https://github.com/wangshisheng/PTMoreR/blob/master/Normal_Exampledata.csv",h4("https://github.com/wangshisheng/PTMoreR/blob/master/Normal_Exampledata.csv"),target="_black"),
+            a(href="https://github.com/wangshisheng/motifeR/blob/master/Normal_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/Normal_Exampledata.csv"),target="_black"),
             h4("b. PTM data obtained from MaxQuant: "),
-            a(href="https://github.com/wangshisheng/PTMoreR/blob/master/MaxQuant_Exampledata.csv",h4("https://github.com/wangshisheng/PTMoreR/blob/master/MaxQuant_Exampledata.csv"),target="_black"),
+            a(href="https://github.com/wangshisheng/motifeR/blob/master/MaxQuant_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/MaxQuant_Exampledata.csv"),target="_black"),
             h4("c. PTM data obtained from Spectronaut: "),
-            a(href="https://github.com/wangshisheng/PTMoreR/blob/master/Spectronaut_Exampledata.csv",h4("https://github.com/wangshisheng/PTMoreR/blob/master/Spectronaut_Exampledata.csv"),target="_black"),
+            a(href="https://github.com/wangshisheng/motifeR/blob/master/Spectronaut_Exampledata.csv",h4("https://github.com/wangshisheng/motifeR/blob/master/Spectronaut_Exampledata.csv"),target="_black"),
             h3("IV. Citation:"),
-            h4("Shisheng Wang, Yue Cai, Jingqiu Cheng, Wenxue Li, Yansheng Liu and Hao Yang. PTMoreR: An Integrated Web Software for Identification and Visualization of Protein Post‐Translational Modification Motifs. Proteomics: 201900254."),
+            h4("Shisheng Wang, Yue Cai, Jingqiu Cheng, Wenxue Li, Yansheng Liu and Hao Yang. motifeR: An Integrated Web Software for Identification and Visualization of Protein Post‐Translational Modification Motifs. Proteomics: 201900254."),
             a(href="https://doi.org/10.1002/pmic.201900245",h4("DOI: 10.1002/pmic.201900245"),target="_black"))
       )
     )
@@ -768,7 +768,7 @@ server<-shinyServer(function(input, output, session){
       paste0("7. PRO.from.Database: provide the protein name containing this peptide from the fasta file the user uploaded."),br(),
       paste0("8. PROindex.from.Database: the position of modified amino acid in the protein sequence."),br(),
       paste0("9. Contain.if: whether containing the sequences that match the regular expression (see above), if true, marked with “Yes”, otherwise, “No”. This column only appears when users choose the parameter--- Check if containing some regular sequence."),br(),
-      paste0("10. Seqwindows_MultiSites: there are two situations here: First, the modified amino acid will be replaced with “X” if it is not the central residue, for example, ‘NKPTSLWNPT(0.832)Y(0.168)GSWFTEK’ has two phosphosites, one is the 10th amino acid with 0.832 location probability, the other is the 11th amino acid with 0.168 location probability, thus if we transform it like ‘NKPTSLWNPT#Y@GSWFTEK’ (high probability is replaced with ‘#’, while low probability is replaced with ‘@’). Then in PTMoreR, the 10th amino acid will be considered as central residue, the 11th amino acid will be replaced with “X”, thus the standard sequence is ‘PTSLWNPTYGSWFTE’, correspondingly, the Seqwindows_MultiSites should be ‘PTSLWNPTXGSWFTE’. Second, if we transform this peptide like ‘NKPTSLWNPT#Y#GSWFTEK’, the two amino acids will be both considered as central residue, thus the standard sequence is ‘PTSLWNPTYGSWFTE;TSLWNPTYGSWFTEK’, correspondingly, the Seqwindows_MultiSites is still ‘PTSLWNPTYGSWFTE;TSLWNPTYGSWFTEK’."),
+      paste0("10. Seqwindows_MultiSites: there are two situations here: First, the modified amino acid will be replaced with “X” if it is not the central residue, for example, ‘NKPTSLWNPT(0.832)Y(0.168)GSWFTEK’ has two phosphosites, one is the 10th amino acid with 0.832 location probability, the other is the 11th amino acid with 0.168 location probability, thus if we transform it like ‘NKPTSLWNPT#Y@GSWFTEK’ (high probability is replaced with ‘#’, while low probability is replaced with ‘@’). Then in motifeR, the 10th amino acid will be considered as central residue, the 11th amino acid will be replaced with “X”, thus the standard sequence is ‘PTSLWNPTYGSWFTE’, correspondingly, the Seqwindows_MultiSites should be ‘PTSLWNPTXGSWFTE’. Second, if we transform this peptide like ‘NKPTSLWNPT#Y#GSWFTEK’, the two amino acids will be both considered as central residue, thus the standard sequence is ‘PTSLWNPTYGSWFTE;TSLWNPTYGSWFTEK’, correspondingly, the Seqwindows_MultiSites is still ‘PTSLWNPTYGSWFTE;TSLWNPTYGSWFTEK’."),
       size ="l",
       easyClose = TRUE,
       footer = modalButton("Cancel")
