@@ -134,9 +134,9 @@ ui<-renderUI(
                       placement = "right",options = list(container = "body")),
             tags$hr(style="border-color: grey;"),
             div(id="xuanzebgdatabase_div",radioButtons("xuanzebgdatabase",label="",choices = list("1. Select" = 1,"2. Upload"=2),
-                                 selected = 1,inline = TRUE)),
+                                selected = 1,inline = TRUE)),
             bsTooltip("xuanzebgdatabase_div","Select or upload the background dataset.",
-                      placement = "bottom",options = list(container = "body")),
+                     placement = "bottom",options = list(container = "body")),
             conditionalPanel(
               condition = "input.xuanzebgdatabase==1",
               uiOutput("metabopathspecies")
@@ -890,6 +890,7 @@ server<-shinyServer(function(input, output, session){
           seqindex3<-as.numeric(strsplit(uploaddata1$Pep.main.index[i],";")[[1]])
           seqseqall1<-vector()
           proidindexall1<-vector()
+          PRO.CombinedID1<-vector()
           if(length(seqindex1)>0 & length(seqindex3)>0){
             for(k in 1:length(seqindex1)){
               seqindex2<-stri_locate_all(pattern = uploaddata1$Stripped.pep[i], pro_seqdf$x[seqindex1[k]], fixed = TRUE)[[1]][,1]
@@ -916,14 +917,17 @@ server<-shinyServer(function(input, output, session){
               }
               seqseqall1[k]<-paste(seqseq,collapse = ";")
               proidindexall1[k]<-paste(indexjian,collapse = ";")
+              PRO.CombinedID1[k]<-paste(paste0(pro_seqdfnames[seqindex1[k]],"_",
+                                               strsplit(uploaddata1$Center.amino.acid[i],";")[[1]],
+                                               indexjian),collapse = ";")
             }
             seqseqall[i]<-paste(seqseqall1,collapse = "::")#"_",";"
             proidall[i]<-paste(pro_seqdfnames[seqindex1],collapse = "::")
             proidindexall[i]<-paste(proidindexall1,collapse = "::")
-            PRO.CombinedID[i]<-paste(paste0(pro_seqdfnames[seqindex1],"_",
-                                            strsplit(uploaddata1$Center.amino.acid[i],";")[[1]],
-                                            strsplit(proidindexall1,";")[[1]]),
-                                     collapse = "::")
+            PRO.CombinedID[i]<-paste(PRO.CombinedID1,collapse = "::")#paste(paste0(pro_seqdfnames[seqindex1],"_",
+                              #              strsplit(uploaddata1$Center.amino.acid[i],";")[[1]],
+                              #              strsplit(proidindexall1,";")[[1]]),
+                              #       collapse = "::")
           }else{
             seqseqall[i]<-"No Match"
             proidall[i]<-"No Match"
